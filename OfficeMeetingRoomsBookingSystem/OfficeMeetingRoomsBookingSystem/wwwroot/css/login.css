@@ -1,0 +1,100 @@
+﻿
+.login-container {
+    display: flex;
+    flex-direction: row;
+    height: 700px;
+    overflow: hidden;
+}
+
+.login-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    position: relative;
+}
+
+.logoText {
+    font-size: 36px;
+    font-weight: bold;
+    color: #3f8f8d;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.slogan {
+    font-size: 18px;
+    color: #5dc0a6;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+#tabs {
+    width: 350px;
+    display: table-row;
+    text-align: center;
+    padding: 0 5px;
+}
+
+.tab-btn {
+    width: 30%;
+    display: table-column;
+}
+
+    .tab-btn.active {
+        width: 65%;
+    }
+
+.tab-content {
+    padding: 20px;
+    border: 1px solid #ddd;
+    background-color: #fff;
+    border-radius: 10px;
+    width: 350px;
+    text-align: center;
+    box-shadow: 0px 0px 15px 1px;
+}
+
+    .tab-content form {
+        padding: 20px;
+    }
+
+    .tab-content label {
+        display: block;
+        margin-bottom: 10px;
+        color: #333;
+    }
+
+    .tab-content input[type="email"],
+    .tab-content input[type="text"],
+    .tab-content input[type="password"] {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .tab-content button[type="submit"] {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+        .tab-content button[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+.hidden {
+    display: none;
+}
+
+#msgError {
+    margin-top: 10px;
+    color: #d9534f;
+    position: absolute;
+    bottom: 0px;
+    z-index: 9999;
+}

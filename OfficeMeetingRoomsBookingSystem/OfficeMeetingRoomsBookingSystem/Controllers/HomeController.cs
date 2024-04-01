@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using OfficeMeetingRoomsBookingSystem.Models;
 using System;
@@ -12,10 +13,77 @@ namespace OfficeMeetingRoomsBookingSystem.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger,
+                              SignInManager<IdentityUser> signInManager,
+                              UserManager<IdentityUser> userManager)
         {
             _logger = logger;
+            _signInManager = signInManager;
+            _userManager = userManager;
+        }
+
+        public RedirectToActionResult RedirectToHome()
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
+        public async Task<IActionResult> LoginPage()
+        {
+            var userName = User.Identity.Name;
+            var existingUser = await _userManager.FindByNameAsync(String.IsNullOrEmpty(userName) ? "" : userName);
+
+            if (existingUser != null)
+                return RedirectToHome();
+            else
+                return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Login(string email, string password)
+        {
+            var existingUser = await _userManager.FindByEmailAsync(email);
+            if (existingUser != null)
+            {
+                var result = await _signInManager.PasswordSignInAsync(existingUser.UserName, password, false, lockoutOnFailure: false);
+
+                if (result.Succeeded)
+                {
+                    return RedirectToHome();
+                }
+            }
+
+            ViewData["ErrorMessage"] = "Invalid login attempt.";
+            return View("LoginPage", ViewBag.ActiveTab = "login");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Register(string email, string password)
+        {
+            var existingUser = await _userManager.FindByEmailAsync(email);
+            if (existingUser != null)
+            {
+                ViewData["ErrorMessage"] = "Email is already registered.";
+                return View("LoginPage", ViewBag.ActiveTab = "register");
+            }
+
+            var newUser = new IdentityUser { UserName = email, Email = email };
+            var result = await _userManager.CreateAsync(newUser, password);
+
+            if (result.Succeeded)
+            {
+                await _signInManager.SignInAsync(newUser, isPersistent: false);
+                return RedirectToHome();
+            }
+            else
+            {
+                List<IdentityError> errorList = result.Errors.ToList();
+                var errors = string.Join("<br/>", errorList.Select(e => e.Description));
+                ViewData["ErrorMessage"] = errors;
+                return View("LoginPage", ViewBag.ActiveTab = "register");
+            }
         }
 
         public IActionResult Index()

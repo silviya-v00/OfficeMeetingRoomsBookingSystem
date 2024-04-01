@@ -1,0 +1,65 @@
+﻿@{
+    ViewData["Title"] = "Login";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/login.css" />
+}
+
+<div class="login-container">
+    <div class="login-panel">
+        <div class="logoText">Unlock Seamless Collaboration</div>
+        <div class="slogan">Reserve Space, Fuel Innovation</div>
+        <div id="tabs">
+            <button id="login-tab" class="tab-btn @(ViewBag.ActiveTab == "register" ? "" : "active")">Login</button>
+            <button id="register-tab" class="tab-btn @(ViewBag.ActiveTab == "register" ? "active" : "")">Register</button>
+        </div>
+        <div id="login-content" class="tab-content @(ViewBag.ActiveTab == "register" ? "hidden" : "")">
+            <form asp-controller="Home" asp-action="Login" method="post">
+                <div>
+                    <label>Email:</label>
+                    <input type="text" name="Email" required />
+                </div>
+                <div>
+                    <label>Password:</label>
+                    <input type="password" name="Password" required />
+                </div>
+                <div style="text-align: right; margin-top: -10px; margin-bottom: 15px;">
+                    <a asp-controller="" asp-action="" style="color: #6c757d; font-size: 12px;">Forgot Password?</a>&nbsp;
+                </div>
+                <button type="submit">Login</button>
+            </form>
+        </div>
+        <div id="register-content" class="tab-content @(ViewBag.ActiveTab == "register" ? "" : "hidden")">
+            <form asp-controller="Home" asp-action="Register" method="post">
+                <div>
+                    <label>Email:</label>
+                    <input type="email" name="Email" required />
+                </div>
+                <div>
+                    <label>Password:</label>
+                    <input type="password" name="Password" required />
+                </div>
+                <button type="submit">Register</button>
+            </form>
+        </div>
+        @if (ViewData["ErrorMessage"] != null)
+        {
+            <div id="msgError" class="alert alert-danger">
+                @Html.Raw(ViewData["ErrorMessage"])
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/login.js" asp-append-version="true"></script>
+    <script>
+        $(document).ready(function () {
+            $('.container').css({
+                'margin-top': '',
+                'padding-bottom': ''
+            });
+        });
+    </script>
+}
