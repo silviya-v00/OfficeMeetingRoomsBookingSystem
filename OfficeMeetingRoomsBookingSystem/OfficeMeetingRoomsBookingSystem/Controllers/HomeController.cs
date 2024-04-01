@@ -13,12 +13,12 @@ namespace OfficeMeetingRoomsBookingSystem.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly SignInManager<IdentityUser> _signInManager;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
 
         public HomeController(ILogger<HomeController> logger,
-                              SignInManager<IdentityUser> signInManager,
-                              UserManager<IdentityUser> userManager)
+                              SignInManager<ApplicationUser> signInManager,
+                              UserManager<ApplicationUser> userManager)
         {
             _logger = logger;
             _signInManager = signInManager;
@@ -60,7 +60,7 @@ namespace OfficeMeetingRoomsBookingSystem.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Register(string email, string password)
+        public async Task<IActionResult> Register(string email, string firstName, string lastName, string password)
         {
             var existingUser = await _userManager.FindByEmailAsync(email);
             if (existingUser != null)
@@ -69,7 +69,7 @@ namespace OfficeMeetingRoomsBookingSystem.Controllers
                 return View("LoginPage", ViewBag.ActiveTab = "register");
             }
 
-            var newUser = new IdentityUser { UserName = email, Email = email };
+            var newUser = new ApplicationUser { UserName = email, Email = email, FirstName = firstName, LastName = lastName };
             var result = await _userManager.CreateAsync(newUser, password);
 
             if (result.Succeeded)
@@ -84,6 +84,12 @@ namespace OfficeMeetingRoomsBookingSystem.Controllers
                 ViewData["ErrorMessage"] = errors;
                 return View("LoginPage", ViewBag.ActiveTab = "register");
             }
+        }
+
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("LoginPage", "Home");
         }
 
         public IActionResult Index()
