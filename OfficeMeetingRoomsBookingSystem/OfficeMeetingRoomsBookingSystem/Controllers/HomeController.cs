@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using OfficeMeetingRoomsBookingSystem.Models;
+using OfficeMeetingRoomsBookingSystem.Utils;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,14 +15,19 @@ namespace OfficeMeetingRoomsBookingSystem.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IConfiguration _configuration;
+        private DBUtil _dbUtil;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
 
         public HomeController(ILogger<HomeController> logger,
+                              IConfiguration configuration,
                               SignInManager<ApplicationUser> signInManager,
                               UserManager<ApplicationUser> userManager)
         {
             _logger = logger;
+            _configuration = configuration;
+            _dbUtil = new DBUtil(_configuration.GetConnectionString("DefaultConnection"));
             _signInManager = signInManager;
             _userManager = userManager;
         }
@@ -99,7 +106,7 @@ namespace OfficeMeetingRoomsBookingSystem.Controllers
 
         public IActionResult MeetingRoomsMap()
         {
-            List<int> floors = new List<int> { 1, 2, 3 };
+            List<int> floors = _dbUtil.GetMeetingRoomFloors();
 
             ViewBag.Floors = floors;
 
@@ -136,14 +143,11 @@ namespace OfficeMeetingRoomsBookingSystem.Controllers
         }
 
         [HttpGet]
-        public IActionResult ShowMeetingRooms(int floor, string day, string timeSlot)
+        public IActionResult ShowMeetingRooms(int floor, string selectedDateStr, string timeSlot)
         {
-            var meetingRooms = new List<MeetingRoomBooking> {
-                new MeetingRoomBooking { MeetingRoomName = "Room 1", MeetingRoomCapacity = 10, MeetingRoomTakenSpaces = 5 },
-                new MeetingRoomBooking { MeetingRoomName = "Room 2", MeetingRoomCapacity = 8, MeetingRoomTakenSpaces = 3 },
-                new MeetingRoomBooking { MeetingRoomName = "Room 3", MeetingRoomCapacity = 12, MeetingRoomTakenSpaces = 7 },
-                new MeetingRoomBooking { MeetingRoomName = "Room 4", MeetingRoomCapacity = 2, MeetingRoomTakenSpaces = 1 }
-            };
+            KeyValuePair<DateTime, DateTime> bookingTime = CommonUtil.GetStartAndEndBookingDateTime(selectedDateStr, timeSlot);
+
+            List<MeetingRoomDetails> meetingRooms = _dbUtil.GetMeetingRoomDetailsByFloorAndDateTime(floor, bookingTime.Key, bookingTime.Value);
 
             return PartialView("_MeetingRoomsPartial", meetingRooms);
         }

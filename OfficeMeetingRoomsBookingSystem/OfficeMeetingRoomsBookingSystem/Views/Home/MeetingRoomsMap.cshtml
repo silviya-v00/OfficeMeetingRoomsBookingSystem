@@ -3,70 +3,13 @@
 }
 
 @section Styles {
-<style>
-    .param-row {
-        display: flex;
-        justify-content: center;
-        margin-bottom: 20px;
-        align-items: center;
-    }
-
-    .param-label {
-        margin-top: 8px;
-    }
-
-    .param-control {
-        margin: 0 20px 0 10px;
-        padding: 8px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        font-size: 16px;
-        color: #333;
-    }
-
-        .param-control:focus {
-            outline: none;
-            border-color: #66afe9;
-        }
-
-        .param-control:disabled {
-            background-color: #ddd;
-            color: #888;
-            cursor: not-allowed;
-        }
-
-    .room-row {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 20px;
-    }
-
-    .room-container {
-        width: 32%;
-        padding: 10px;
-        border-radius: 5px;
-        background-color: #fff;
-        box-shadow: 8px 8px 5px #adc1e6;
-    }
-
-        .room-container h4 {
-            margin-top: 0;
-            font-size: 18px;
-            color: #333;
-        }
-
-        .room-container p {
-            margin-bottom: 0;
-            font-size: 16px;
-            color: #666;
-        }
-</style>
+    <link rel="stylesheet" href="~/css/meeting-rooms-map.css" />
 }
 
 <div style="width: 80%; margin: 0 auto;">
     <div class="param-row">
-        <label class="param-label" for="floorDropdown">Floor:</label>
-        <select class="param-control" id="floorDropdown">
+        <label class="param-label" for="ddFloor">Floor:</label>
+        <select class="param-control" id="ddFloor">
             <option value="">Select Floor</option>
             @foreach (var floor in @ViewBag.Floors)
             {
@@ -74,11 +17,11 @@
             }
         </select>
 
-        <label class="param-label" for="dayDropdown">Day:</label>
-        <input class="param-control" type="date" id="dayDropdown" min="@DateTime.Today.ToString("yyyy-MM-dd")" onkeydown="return false" disabled>
+        <label class="param-label" for="txtDay">Day:</label>
+        <input class="param-control" type="date" id="txtDay" min="@DateTime.Today.ToString("yyyy-MM-dd")" onkeydown="return false" disabled>
 
-        <label class="param-label" for="timeSlotDropdown">Time Slot:</label>
-        <select class="param-control" id="timeSlotDropdown" disabled>
+        <label class="param-label" for="ddTimeSlot">Time Slot:</label>
+        <select class="param-control" id="ddTimeSlot" disabled>
             <option value="">Select Time Slot</option>
         </select>
     </div>
@@ -88,67 +31,5 @@
 </div>
 
 @section Scripts {
-    <script>
-    $(document).ready(function () {
-        $("#floorDropdown").change(function () {
-            ClearMeetingRooms();
-            var floor = $(this).val();
-            if (floor !== "") {
-                $("#dayDropdown").prop('disabled', false);
-            }
-            else {
-                $("#dayDropdown").prop('disabled', true);
-            }
-            $("#timeSlotDropdown").prop('disabled', true);
-            $("#timeSlotDropdown").val('');
-            $("#dayDropdown").val('');
-        });
-
-        $("#dayDropdown").change(function () {
-            ClearMeetingRooms();
-            var day = $(this).val();
-            if (day !== "") {
-                $("#timeSlotDropdown").prop('disabled', false);
-
-                $.ajax({
-                    url: "@Url.Action("GetTimeSlots", "Home")",
-                    type: "GET",
-                    data: { selectedDateStr: day },
-                    success: function (response) {
-                        $("#timeSlotDropdown").empty().append('<option value="">Select Time Slot</option>');
-                        $.each(response, function (index, slot) {
-                            $("#timeSlotDropdown").append('<option value="' + slot + '">' + slot + '</option>');
-                        });
-                    }
-                });
-            }
-            else {
-                $("#timeSlotDropdown").prop('disabled', true);
-            }
-            $("#timeSlotDropdown").val('');
-        });
-
-        $("#timeSlotDropdown").change(function () {
-            ClearMeetingRooms();
-            var floor = $("#floorDropdown").val();
-            var day = $("#dayDropdown").val();
-            var timeSlot = $(this).val();
-            if (floor !== "" && day !== "" && timeSlot !== "") {
-
-                $.ajax({
-                    url: "@Url.Action("ShowMeetingRooms", "Home")",
-                    type: "GET",
-                    data: { floor: floor, day: day, timeSlot: timeSlot },
-                    success: function (response) {
-                        $("#meetingRoomsContainer").html(response);
-                    }
-                });
-            }
-        });
-
-        function ClearMeetingRooms() {
-            $("#meetingRoomsContainer").empty();
-        }
-    });
-    </script>
+    <script src="~/js/meeting-rooms-map.js" asp-append-version="true"></script>
 }

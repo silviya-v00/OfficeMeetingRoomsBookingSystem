@@ -1,0 +1,71 @@
+﻿
+.param-row {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    align-items: center;
+}
+
+.param-label {
+    margin-top: 8px;
+}
+
+.param-control {
+    margin: 0 20px 0 10px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    color: #333;
+}
+
+    .param-control:focus {
+        outline: none;
+        border-color: #66afe9;
+    }
+
+    .param-control:disabled {
+        background-color: #ddd;
+        color: #888;
+        cursor: not-allowed;
+    }
+
+    .param-control[type="date"]::-webkit-calendar-picker-indicator {
+        cursor: pointer;
+    }
+
+select.param-control {
+    cursor: pointer;
+}
+
+.room-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.room-container {
+    width: 32%;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #fff;
+    box-shadow: 8px 8px 5px #adc1e6;
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+    .room-container:hover {
+        transform: scale(1.05);
+    }
+
+    .room-container h4 {
+        margin-top: 0;
+        font-size: 18px;
+        color: #333;
+    }
+
+    .room-container p {
+        margin-bottom: 0;
+        font-size: 16px;
+        color: #666;
+    }
