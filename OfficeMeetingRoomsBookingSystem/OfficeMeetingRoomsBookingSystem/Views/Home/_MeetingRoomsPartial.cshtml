@@ -1,0 +1,26 @@
+﻿@model List<MeetingRoomBooking>
+
+@{
+    int roomsPerRow = 3;
+    int roomCount = 0;
+}
+
+@foreach (var room in Model)
+{
+    if (roomCount % roomsPerRow == 0)
+    {
+        @:<div class="room-row">
+    }
+
+    <div class="room-container">
+        <h4>@room.MeetingRoomName</h4>
+        <p style="text-align: center;">@room.MeetingRoomTakenSpaces / @room.MeetingRoomCapacity</p>
+    </div>
+
+    roomCount++;
+
+    if (roomCount % roomsPerRow == 0 || roomCount == Model.Count)
+    {
+        @:</div>
+    }
+}

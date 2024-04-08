@@ -27,7 +27,7 @@ namespace OfficeMeetingRoomsBookingSystem.Controllers
 
         public RedirectToActionResult RedirectToHome()
         {
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("MeetingRoomsMap", "Home");
         }
 
         public async Task<IActionResult> LoginPage()
@@ -95,6 +95,57 @@ namespace OfficeMeetingRoomsBookingSystem.Controllers
         public IActionResult Index()
         {
             return View();
+        }
+
+        public IActionResult MeetingRoomsMap()
+        {
+            List<int> floors = new List<int> { 1, 2, 3 };
+
+            ViewBag.Floors = floors;
+
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult GetTimeSlots(string selectedDateStr)
+        {
+            List<string> timeSlots = new List<string>();
+            DateTime selectedDate;
+            if (DateTime.TryParse(selectedDateStr, out selectedDate))
+            {
+                DateTime today = DateTime.Today;
+                DateTime currentTime = DateTime.Now;
+                DateTime startTime = selectedDate.Date;
+
+                if (selectedDate.Date == today && currentTime.Hour < 23)
+                {
+                    startTime = new DateTime(selectedDate.Year, selectedDate.Month, selectedDate.Day, currentTime.Hour + 1, 0, 0);
+                }
+
+                while (startTime < selectedDate.Date.AddDays(1))
+                {
+                    string startTimeString = startTime.ToString("HH:mm");
+                    string endTimeString = startTime.AddHours(1).ToString("HH:mm");
+                    string timeSlot = $"{startTimeString}-{endTimeString}";
+                    timeSlots.Add(timeSlot);
+                    startTime = startTime.AddHours(1);
+                }
+            }
+
+            return Json(timeSlots);
+        }
+
+        [HttpGet]
+        public IActionResult ShowMeetingRooms(int floor, string day, string timeSlot)
+        {
+            var meetingRooms = new List<MeetingRoomBooking> {
+                new MeetingRoomBooking { MeetingRoomName = "Room 1", MeetingRoomCapacity = 10, MeetingRoomTakenSpaces = 5 },
+                new MeetingRoomBooking { MeetingRoomName = "Room 2", MeetingRoomCapacity = 8, MeetingRoomTakenSpaces = 3 },
+                new MeetingRoomBooking { MeetingRoomName = "Room 3", MeetingRoomCapacity = 12, MeetingRoomTakenSpaces = 7 },
+                new MeetingRoomBooking { MeetingRoomName = "Room 4", MeetingRoomCapacity = 2, MeetingRoomTakenSpaces = 1 }
+            };
+
+            return PartialView("_MeetingRoomsPartial", meetingRooms);
         }
 
         public IActionResult Privacy()
