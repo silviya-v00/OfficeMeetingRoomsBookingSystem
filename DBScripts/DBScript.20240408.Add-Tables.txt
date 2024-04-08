@@ -1,0 +1,29 @@
+USE [OfficeMeetingRoomsBooking]
+GO
+
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES 
+               WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'MeetingRooms')
+BEGIN
+	CREATE TABLE dbo.MeetingRooms (
+		MeetingRoomID int IDENTITY(1,1) PRIMARY KEY,
+		MeetingRoomName nvarchar(max),
+		MeetingRoomFloor int,
+		MeetingRoomCapacity int
+	)
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES 
+               WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'MeetingRoomBooking')
+BEGIN
+	CREATE TABLE dbo.MeetingRoomBooking (
+		MeetingRoomBookingID int IDENTITY(1,1) PRIMARY KEY,
+		UserID nvarchar(450),
+		MeetingRoomID int,
+		StartDateTime datetime,
+		EndDateTime datetime
+		CONSTRAINT FK_MeetingRoomBooking_AspNetUsers_UserID FOREIGN KEY (UserID) REFERENCES dbo.AspNetUsers(Id),
+		CONSTRAINT FK_MeetingRoomBooking_MeetingRooms_MeetingRoomID FOREIGN KEY (MeetingRoomID) REFERENCES dbo.MeetingRooms(MeetingRoomID)
+	)
+END
+GO
