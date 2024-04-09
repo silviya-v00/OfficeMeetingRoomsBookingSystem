@@ -129,13 +129,16 @@ namespace OfficeMeetingRoomsBookingSystem.Controllers
                     startTime = new DateTime(selectedDate.Year, selectedDate.Month, selectedDate.Day, currentTime.Hour + 1, 0, 0);
                 }
 
-                while (startTime < selectedDate.Date.AddDays(1))
+                if (selectedDate.Date != today || (selectedDate.Date == today && currentTime.Hour < 23))
                 {
-                    string startTimeString = startTime.ToString("HH:mm");
-                    string endTimeString = startTime.AddHours(1).ToString("HH:mm");
-                    string timeSlot = $"{startTimeString}-{endTimeString}";
-                    timeSlots.Add(timeSlot);
-                    startTime = startTime.AddHours(1);
+                    while (startTime < selectedDate.Date.AddDays(1))
+                    {
+                        string startTimeString = startTime.ToString("HH:mm");
+                        string endTimeString = startTime.AddHours(1).ToString("HH:mm");
+                        string timeSlot = $"{startTimeString}-{endTimeString}";
+                        timeSlots.Add(timeSlot);
+                        startTime = startTime.AddHours(1);
+                    }
                 }
             }
 
