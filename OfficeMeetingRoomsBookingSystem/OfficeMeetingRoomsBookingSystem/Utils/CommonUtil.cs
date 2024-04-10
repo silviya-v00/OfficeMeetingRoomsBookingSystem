@@ -7,6 +7,18 @@ namespace OfficeMeetingRoomsBookingSystem.Utils
 {
     public static class CommonUtil
     {
+        private static List<string> LoginActions = new List<string>
+        {
+            "LoginPage",
+            "Login",
+            "Register"
+        };
+
+        public static bool IsLoginAction(string viewName)
+        {
+            return LoginActions.Contains(viewName);
+        }
+
         public static KeyValuePair<DateTime, DateTime> GetStartAndEndBookingDateTime(string selectedDateStr, string timeSlot)
         {
             DateTime selectedDate = DateTime.Parse(selectedDateStr);
