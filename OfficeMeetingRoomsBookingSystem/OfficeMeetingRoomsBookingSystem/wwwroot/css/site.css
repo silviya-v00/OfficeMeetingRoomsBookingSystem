@@ -93,3 +93,11 @@ button {
     font-weight: 300;
     margin-bottom: 30px;
 }
+
+i {
+    cursor: pointer;
+}
+
+i:hover {
+    transform: scale(1.2);
+}

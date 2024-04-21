@@ -41,7 +41,7 @@
     @if (SignInManager.IsSignedIn(User))
     {
         <header style="position: fixed; width: 100%; z-index: 1000; top: 0; height: 60px;">
-            <nav class="navbar navbar-expand-sm navbar-toggleable-sm mb-3">
+            <nav id="navbar-menu" class="navbar navbar-expand-sm navbar-toggleable-sm mb-3">
                 <div class="container">
                     <a class="navbar-brand text-dark" asp-area="" asp-controller="Home" asp-action="MeetingRoomsMap">Office Meet</a>
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"

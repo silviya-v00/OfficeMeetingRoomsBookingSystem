@@ -32,6 +32,11 @@ namespace OfficeMeetingRoomsBookingSystem.Controllers
             _userManager = userManager;
         }
 
+        public async Task<ApplicationUser> GetApplicationUser()
+        {
+            return await _userManager.GetUserAsync(User);
+        }
+
         public RedirectToActionResult RedirectToHome()
         {
             return RedirectToAction("MeetingRoomsMap", "Home");
@@ -153,6 +158,31 @@ namespace OfficeMeetingRoomsBookingSystem.Controllers
             List<MeetingRoomDetails> meetingRooms = _dbUtil.GetMeetingRoomDetailsByFloorAndDateTime(floor, bookingTime.Key, bookingTime.Value);
 
             return PartialView("_MeetingRoomsPartial", meetingRooms);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> OpenMeetingRoomBookingForm(int roomId, string roomName, string selectedDateStr, string timeSlot)
+        {
+            var currentUser = await GetApplicationUser();
+
+            KeyValuePair<DateTime, DateTime> bookingTime = CommonUtil.GetStartAndEndBookingDateTime(selectedDateStr, timeSlot);
+
+            MeetingRoomBooking meetingRoom = new MeetingRoomBooking()
+            {
+                MeetingRoomID = roomId,
+                MeetingRoomName = roomName,
+                StartDateTime = bookingTime.Key,
+                EndDateTime = bookingTime.Value,
+                FullName = currentUser.FirstName + " " + currentUser.LastName
+            };
+
+            return PartialView("_MeetingRoomBookingPartial", meetingRoom);
+        }
+
+        [HttpPost]
+        public IActionResult BookMeetingRoom(int meetingRoomID, string meetingRoomName, DateTime startDateTime, DateTime endDateTime, string fullName)
+        {
+            return Json(new { success = false, message = "err" });
         }
 
         public IActionResult Privacy()

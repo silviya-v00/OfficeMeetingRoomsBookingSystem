@@ -59,4 +59,87 @@ $(document).ready(function () {
     function ClearMeetingRooms() {
         $("#meetingRoomsContainer").empty();
     }
+
+    function OpenMeetingRoomBookingPopup() {
+        $("#popupForm").show();
+        $("#overlay").show();
+        $("#navbar-menu").attr("onclick", "return false;");
+        $("header").find(".navbar, .navbar-brand, .navbar-nav, .nav-link, .nav-item i").addClass("disabled-link");
+    }
+
+    function CloseMeetingRoomBookingPopup() {
+        $("#popupForm").hide();
+        $("#overlay").hide();
+        $("#navbar-menu").removeAttr("onclick");
+        $("header").find(".navbar, .navbar-brand, .navbar-nav, .nav-link, .nav-item i").removeClass("disabled-link");
+    }
+
+    $(document).on('click', '.room-container', function () {
+        var roomId = $(this).attr('id');
+        var roomName = $(this).data('roomName');
+        var day = $("#txtDay").val();
+        var timeSlot = $("#ddTimeSlot").val();
+
+        $.ajax({
+            url: "/Home/OpenMeetingRoomBookingForm",
+            type: "GET",
+            data: {
+                roomId: roomId,
+                roomName: roomName,
+                selectedDateStr: day,
+                timeSlot: timeSlot
+            },
+            success: function (response) {
+                $("#meetingRoomBookingContainer").html(response);
+                OpenMeetingRoomBookingPopup();
+            }
+        });
+    });
+
+    $(document).on('click', '#btnSaveBooking', function () {
+        var meetingRoomID = $("#hdnBookingMeetingRoomID").val();
+        var meetingRoomName = $("#hdnBookingMeetingRoomName").val();
+        var startDateTime = $("#txtBookingStartDateTime").val();
+        var endDateTime = $("#txtBookingEndDateTime").val();
+        var fullName = $("#txtBookingFullName").val();
+
+        $.ajax({
+            url: "/Home/BookMeetingRoom",
+            type: "POST",
+            data: {
+                meetingRoomID: meetingRoomID,
+                meetingRoomName: meetingRoomName,
+                startDateTime: startDateTime,
+                endDateTime: endDateTime,
+                fullName: fullName
+            },
+            success: function (response) {
+                console.log('success');
+                if (response.success) {
+                    alert(response.message); // Display success message
+                } else {
+                    alert(response.message); // Display error message
+                }
+            }
+        });
+    });
+
+    $(document).on('click', '#btnClosePopUp', function () {
+        CloseMeetingRoomBookingPopup();
+        ClearMeetingRooms();
+        var floor = $("#ddFloor").val();
+        var day = $("#txtDay").val();
+        var timeSlot = $("#ddTimeSlot").val();
+        if (floor !== "" && day !== "" && timeSlot !== "") {
+
+            $.ajax({
+                url: "/Home/ShowMeetingRooms",
+                type: "GET",
+                data: { floor: floor, selectedDateStr: day, timeSlot: timeSlot },
+                success: function (response) {
+                    $("#meetingRoomsContainer").html(response);
+                }
+            });
+        }
+    });
 });
