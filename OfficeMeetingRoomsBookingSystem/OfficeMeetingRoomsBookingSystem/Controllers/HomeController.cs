@@ -180,9 +180,15 @@ namespace OfficeMeetingRoomsBookingSystem.Controllers
         }
 
         [HttpPost]
-        public IActionResult BookMeetingRoom(int meetingRoomID, string meetingRoomName, DateTime startDateTime, DateTime endDateTime, string fullName)
+        public async Task<IActionResult> BookMeetingRoom(int meetingRoomID, string meetingRoomName, DateTime startDateTime, DateTime endDateTime)
         {
-            return Json(new { success = false, message = "err" });
+            var currentUser = await GetApplicationUser();
+            string errMsg = _dbUtil.BookMeetingRoom(currentUser.Id, meetingRoomID, meetingRoomName, startDateTime, endDateTime);
+
+            if (String.IsNullOrEmpty(errMsg))
+                return Json(new { success = true, message = "" });
+            else
+                return Json(new { success = false, message = errMsg });
         }
 
         public IActionResult Privacy()

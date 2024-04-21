@@ -101,7 +101,6 @@ $(document).ready(function () {
         var meetingRoomName = $("#hdnBookingMeetingRoomName").val();
         var startDateTime = $("#txtBookingStartDateTime").val();
         var endDateTime = $("#txtBookingEndDateTime").val();
-        var fullName = $("#txtBookingFullName").val();
 
         $.ajax({
             url: "/Home/BookMeetingRoom",
@@ -110,15 +109,14 @@ $(document).ready(function () {
                 meetingRoomID: meetingRoomID,
                 meetingRoomName: meetingRoomName,
                 startDateTime: startDateTime,
-                endDateTime: endDateTime,
-                fullName: fullName
+                endDateTime: endDateTime
             },
             success: function (response) {
-                console.log('success');
                 if (response.success) {
-                    alert(response.message); // Display success message
+                    $('#btnClosePopUp').trigger('click');
                 } else {
-                    alert(response.message); // Display error message
+                    $("#bookingRoomError").text(response.message).show();
+                    $("#bookingRoomForm").hide();
                 }
             }
         });

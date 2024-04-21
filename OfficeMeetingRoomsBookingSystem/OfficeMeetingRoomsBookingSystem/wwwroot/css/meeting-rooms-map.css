@@ -126,3 +126,9 @@ select.param-control {
     color: #000;
     cursor: not-allowed;
 }
+
+#bookingRoomError {
+    width: 300px;
+    text-align: center;
+    margin: 20px 20px 0 10px;
+}

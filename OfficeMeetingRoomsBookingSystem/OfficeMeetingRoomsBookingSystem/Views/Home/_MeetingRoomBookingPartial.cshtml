@@ -11,7 +11,7 @@
             <i id="btnClosePopUp" style="font-size: 2rem; float: right;" class="fa-solid fa-xmark" title="Close"></i>
             <h4 style="padding-top: 30px;">Booking a meeting room</h4>
         </div>
-        <div class="booking-room">
+        <div id="bookingRoomForm" class="booking-room">
             <div>
                 <input type="hidden" id="hdnBookingMeetingRoomID" name="MeetingRoomID" value="@Model.MeetingRoomID" />
                 <input type="hidden" id="hdnBookingMeetingRoomName" name="MeetingRoomName" value="@Model.MeetingRoomName" />
@@ -35,6 +35,8 @@
                 <input type="text" readonly class="param-control booking-room-control disabled-input" id="txtBookingFullName" name="FullName" value="@Model.FullName" />
             </div>
             <button id="btnSaveBooking">Save</button>
+        </div>
+        <div id="bookingRoomError" class="alert alert-danger" style="display: none;">
         </div>
     </div>
 </div>

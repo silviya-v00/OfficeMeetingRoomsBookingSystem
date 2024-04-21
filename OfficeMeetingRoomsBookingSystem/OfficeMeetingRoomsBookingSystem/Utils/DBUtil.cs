@@ -96,5 +96,71 @@ namespace OfficeMeetingRoomsBookingSystem.Utils
 
             return meetingRoomDetails;
         }
+
+        public string BookMeetingRoom(string userID, int meetingRoomID, string meetingRoomName, DateTime startDateTime, DateTime endDateTime)
+        {
+            string errMsg = "";
+            var sqlConn = new SqlConnection(_connectionString);
+            sqlConn.Open();
+
+            try
+            {
+                string SQL = @"
+                                DECLARE @ErrMessage nvarchar(max)
+                                DECLARE @MeetingRoomTakenSpaces int
+                                DECLARE @MeetingRoomCapacity int
+                                DECLARE @HasBooking int
+
+                                SELECT @HasBooking = COUNT(*)
+                                FROM dbo.MeetingRoomBooking
+                                WHERE UserID = @CurrentUserID
+                                    AND StartDateTime = @StartDateTime
+                                    AND EndDateTime = @EndDateTime
+
+                                SELECT @MeetingRoomTakenSpaces = ISNULL(b.MeetingRoomTakenSpaces, 0), @MeetingRoomCapacity = a.MeetingRoomCapacity
+                                FROM dbo.MeetingRooms a
+                                LEFT OUTER JOIN (SELECT a.MeetingRoomID, COUNT(*) as MeetingRoomTakenSpaces
+				                                 FROM dbo.MeetingRoomBooking a
+				                                 WHERE a.StartDateTime = @StartDateTime AND a.EndDateTime = @EndDateTime
+				                                 GROUP BY a.MeetingRoomID) b ON a.MeetingRoomID = b.MeetingRoomID
+                                WHERE a.MeetingRoomID = @MeetingRoomID
+
+                                IF @HasBooking > 0
+                                    SET @ErrMessage = 'You already have a booking during the specified times.'
+                                ELSE
+                                BEGIN
+                                    IF @MeetingRoomTakenSpaces >= @MeetingRoomCapacity
+                                        SET @ErrMessage = 'Room ' + @MeetingRoomName + ' is fully booked during the specified times.'
+                                    ELSE
+	                                BEGIN	
+		                                INSERT INTO dbo.MeetingRoomBooking (UserID, MeetingRoomID, StartDateTime, EndDateTime)
+		                                VALUES (@CurrentUserID, @MeetingRoomID, @StartDateTime, @EndDateTime)
+	                                END
+                                END
+
+                                SELECT @ErrMessage as ErrMessage";
+
+                SqlCommand command = new SqlCommand(SQL, sqlConn);
+                command.Parameters.Add("@StartDateTime", System.Data.SqlDbType.DateTime).Value = startDateTime;
+                command.Parameters.Add("@EndDateTime", System.Data.SqlDbType.DateTime).Value = endDateTime;
+                command.Parameters.Add("@MeetingRoomID", System.Data.SqlDbType.Int).Value = meetingRoomID;
+                command.Parameters.Add("@MeetingRoomName", System.Data.SqlDbType.NVarChar).Value = meetingRoomName;
+                command.Parameters.Add("@CurrentUserID", System.Data.SqlDbType.NVarChar).Value = userID;
+                SqlDataReader dataReader = command.ExecuteReader();
+
+                if (dataReader.Read())
+                {
+                    errMsg = dataReader["ErrMessage"].ToString();
+                }
+
+                dataReader.Close();
+            }
+            finally
+            {
+                sqlConn.Close();
+            }
+
+            return errMsg;
+        }
     }
 }
