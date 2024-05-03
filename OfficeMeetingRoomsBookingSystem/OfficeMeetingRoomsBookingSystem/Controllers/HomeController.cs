@@ -200,6 +200,14 @@ namespace OfficeMeetingRoomsBookingSystem.Controllers
             return View(bookedRooms);
         }
 
+        [HttpPost]
+        public IActionResult DeleteBooking(int bookingID)
+        {
+            _dbUtil.DeleteBooking(bookingID);
+
+            return Ok();
+        }
+
         public IActionResult Privacy()
         {
             return View();

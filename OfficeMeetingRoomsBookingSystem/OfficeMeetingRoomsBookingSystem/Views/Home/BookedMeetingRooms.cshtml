@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Booked meeting rooms";
+    bool canDeleteAnyRows = Model.Any(x => x.IsCurrentUserBooking);
 }
 
 @section Styles {
@@ -19,6 +20,10 @@
                 <th>End date / time</th>
                 <th>Room Name</th>
                 <th>Booked By</th>
+                @if (canDeleteAnyRows)
+                {
+                    <th style="width: 85px;"></th>
+                }
             </tr>
 
             @foreach (var room in Model)
@@ -28,8 +33,23 @@
                     <td>@room.EndDateTime.ToString("dd-MM-yyyy HH:mm")</td>
                     <td>@room.MeetingRoomName</td>
                     <td>@room.FullName</td>
+                    @if (canDeleteAnyRows)
+                    {
+                        <td>
+                            @if (room.IsCurrentUserBooking)
+                            { 
+                                <i class="fa-solid fa-xmark try-delete-icon" style="font-size: 1.8rem;" title="Delete"></i>
+                                <i class="fa-solid fa-ban cancel-icon" style="font-size: 1.8rem; margin-right: 4px; display: none;" title="Cancel"></i>
+                                <i class="fa-solid fa-trash-can bin-icon" style="font-size: 1.8rem; color: red; display: none;" title="Confirm Delete"></i>
+                            }
+                        </td>
+                    }
                 </tr>
             }
         </table>
     </div>
 </div>
+
+@section Scripts {
+    <script src="~/js/booked-meeting-rooms.js" asp-append-version="true"></script>
+}

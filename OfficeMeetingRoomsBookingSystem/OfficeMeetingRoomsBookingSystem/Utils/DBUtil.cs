@@ -218,5 +218,25 @@ namespace OfficeMeetingRoomsBookingSystem.Utils
 
             return bookedRooms;
         }
+
+        public void DeleteBooking(int bookingID)
+        {
+            var sqlConn = new SqlConnection(_connectionString);
+            sqlConn.Open();
+
+            try
+            {
+                string SQL = @"DELETE FROM dbo.MeetingRoomBooking
+                               WHERE MeetingRoomBookingID = @MeetingRoomBookingID";
+
+                SqlCommand command = new SqlCommand(SQL, sqlConn);
+                command.Parameters.Add("@MeetingRoomBookingID", System.Data.SqlDbType.Int).Value = bookingID;
+                command.ExecuteNonQuery();
+            }
+            finally
+            {
+                sqlConn.Close();
+            }
+        }
     }
 }
