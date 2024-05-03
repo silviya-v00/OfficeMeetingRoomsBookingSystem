@@ -191,6 +191,15 @@ namespace OfficeMeetingRoomsBookingSystem.Controllers
                 return Json(new { success = false, message = errMsg });
         }
 
+        public async Task<IActionResult> BookedMeetingRooms()
+        {
+            var currentUser = await GetApplicationUser();
+
+            List<MeetingRoomBooking> bookedRooms = _dbUtil.GetBookedMeetingRooms(currentUser.Id);
+
+            return View(bookedRooms);
+        }
+
         public IActionResult Privacy()
         {
             return View();

@@ -1,0 +1,35 @@
+﻿@model List<MeetingRoomBooking>
+
+@{
+    ViewData["Title"] = "Booked meeting rooms";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/booked-meeting-rooms.css" />
+}
+
+<div style="width: 80%; margin: 0 auto;">
+    <div class="text-center">
+        <h2 class="page-header">Booked meeting rooms</h2>
+    </div>
+    <div class="bookings-section">
+        <table class="bookings-table">
+            <tr>
+                <th>Start date / time</th>
+                <th>End date / time</th>
+                <th>Room Name</th>
+                <th>Booked By</th>
+            </tr>
+
+            @foreach (var room in Model)
+            {
+                <tr id="@room.MeetingRoomBookingID">
+                    <td>@room.StartDateTime.ToString("dd-MM-yyyy HH:mm")</td>
+                    <td>@room.EndDateTime.ToString("dd-MM-yyyy HH:mm")</td>
+                    <td>@room.MeetingRoomName</td>
+                    <td>@room.FullName</td>
+                </tr>
+            }
+        </table>
+    </div>
+</div>

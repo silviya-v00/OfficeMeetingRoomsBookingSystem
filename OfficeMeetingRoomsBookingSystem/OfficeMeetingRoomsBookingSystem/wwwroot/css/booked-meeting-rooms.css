@@ -1,0 +1,29 @@
+﻿
+.bookings-section {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 60px;
+    align-items: center;
+}
+
+.bookings-table {
+    text-align: center;
+    width: 80%;
+}
+    .bookings-table th {
+        background-color: #9d6bab;
+        color: #fff;
+        padding: 10px;
+    }
+
+    .bookings-table tr:nth-child(even) {
+        background-color: rgb(93, 120, 171, 0.3);
+    }
+
+    .bookings-table tr td {
+        padding: 10px;
+    }
+
+    .bookings-table tr:hover {
+        background-color: rgba(182, 148, 189, 0.5);
+    }

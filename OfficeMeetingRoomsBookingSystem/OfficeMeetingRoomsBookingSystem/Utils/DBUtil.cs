@@ -162,5 +162,61 @@ namespace OfficeMeetingRoomsBookingSystem.Utils
 
             return errMsg;
         }
+
+        public List<MeetingRoomBooking> GetBookedMeetingRooms(string userID)
+        {
+            List<MeetingRoomBooking> bookedRooms = new List<MeetingRoomBooking>();
+            var sqlConn = new SqlConnection(_connectionString);
+            sqlConn.Open();
+
+            try
+            {
+                string SQL = @"SELECT a.MeetingRoomBookingID, b.MeetingRoomName, a.StartDateTime, a.EndDateTime, (c.FirstName + ' ' + c.LastName) as FullName,
+	                                   CASE WHEN a.UserID = @CurrentUserID
+			                                THEN 1
+			                                ELSE 0
+	                                   END as IsCurrentUserBooking
+                                FROM dbo.MeetingRoomBooking a
+                                INNER JOIN dbo.MeetingRooms b on a.MeetingRoomID = b.MeetingRoomID
+                                INNER JOIN dbo.AspNetUsers c on a.UserID = c.Id
+                                WHERE a.StartDateTime >= GetDate()
+                                ORDER BY a.StartDateTime, b.MeetingRoomName, c.FirstName, c.LastName";
+
+                SqlCommand command = new SqlCommand(SQL, sqlConn);
+                command.Parameters.Add("@CurrentUserID", System.Data.SqlDbType.NVarChar).Value = userID;
+                SqlDataReader dataReader = command.ExecuteReader();
+
+                while (dataReader.Read())
+                {
+                    MeetingRoomBooking booking = new MeetingRoomBooking();
+
+                    if (dataReader["MeetingRoomBookingID"] is int)
+                        booking.MeetingRoomBookingID = (int)dataReader["MeetingRoomBookingID"];
+
+                    booking.MeetingRoomName = dataReader["MeetingRoomName"].ToString();
+
+                    if (dataReader["StartDateTime"] is DateTime)
+                        booking.StartDateTime = (DateTime)dataReader["StartDateTime"];
+
+                    if (dataReader["EndDateTime"] is DateTime)
+                        booking.EndDateTime = (DateTime)dataReader["EndDateTime"];
+
+                    booking.FullName = dataReader["FullName"].ToString();
+
+                    if (dataReader["IsCurrentUserBooking"] is int)
+                        booking.IsCurrentUserBooking = Convert.ToBoolean((int)dataReader["IsCurrentUserBooking"]);
+
+                    bookedRooms.Add(booking);
+                }
+
+                dataReader.Close();
+            }
+            finally
+            {
+                sqlConn.Close();
+            }
+
+            return bookedRooms;
+        }
     }
 }
