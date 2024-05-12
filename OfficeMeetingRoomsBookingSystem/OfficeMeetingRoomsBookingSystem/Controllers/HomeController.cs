@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -17,6 +18,7 @@ namespace OfficeMeetingRoomsBookingSystem.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly IConfiguration _configuration;
         private DBUtil _dbUtil;
+        private MailUtil _mailUtil;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
 
@@ -28,6 +30,7 @@ namespace OfficeMeetingRoomsBookingSystem.Controllers
             _logger = logger;
             _configuration = configuration;
             _dbUtil = new DBUtil(_configuration.GetConnectionString("DefaultConnection"));
+            _mailUtil = new MailUtil(_configuration);
             _signInManager = signInManager;
             _userManager = userManager;
         }
@@ -102,6 +105,83 @@ namespace OfficeMeetingRoomsBookingSystem.Controllers
         {
             await _signInManager.SignOutAsync();
             return RedirectToAction("LoginPage", "Home");
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                if (user != null)
+                {
+                    var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+                    var passwordResetLink = Url.Action("ResetPassword", "Home",
+                            new { email = model.Email, token = token }, Request.Scheme);
+
+                    var subject = "Password Reset";
+                    var messageBody = "To reset your password, please click the following link: <a href='" + passwordResetLink + "'>Reset Password</a>";
+
+                    _mailUtil.SendEmail(model.Email, subject, messageBody);
+
+                    return View("ForgotPasswordConfirmation");
+                }
+
+                // Even if there is no registered user with the email, do not reveal that the user does not exist
+                return View("ForgotPasswordConfirmation");
+            }
+
+            return View(model);
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ResetPassword(string token, string email)
+        {
+            if (token == null || email == null)
+            {
+                ModelState.AddModelError("", "Invalid password reset token");
+            }
+            return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByEmailAsync(model.Email);
+
+                if (user != null)
+                {
+                    var result = await _userManager.ResetPasswordAsync(user, model.Token, model.Password);
+                    if (result.Succeeded)
+                    {
+                        return View("ResetPasswordConfirmation");
+                    }
+
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError("", error.Description);
+                    }
+
+                    return View(model);
+                }
+
+                return View("ResetPasswordConfirmation");
+            }
+
+            return View(model);
         }
 
         public IActionResult Index()

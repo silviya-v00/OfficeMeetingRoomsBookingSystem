@@ -34,6 +34,7 @@ namespace OfficeMeetingRoomsBookingSystem
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddIdentity<ApplicationUser, IdentityRole>()
+                .AddDefaultTokenProviders()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews();
             services.AddControllersWithViews(options =>

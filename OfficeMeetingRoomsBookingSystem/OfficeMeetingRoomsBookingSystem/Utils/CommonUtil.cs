@@ -11,7 +11,11 @@ namespace OfficeMeetingRoomsBookingSystem.Utils
         {
             "LoginPage",
             "Login",
-            "Register"
+            "Register",
+            "ForgotPassword",
+            "ForgotPasswordConfirmation",
+            "ResetPassword",
+            "ResetPasswordConfirmation"
         };
 
         public static bool IsLoginAction(string viewName)

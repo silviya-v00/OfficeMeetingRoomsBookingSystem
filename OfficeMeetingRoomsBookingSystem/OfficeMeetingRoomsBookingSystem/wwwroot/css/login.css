@@ -98,3 +98,10 @@
     bottom: 0px;
     z-index: 9999;
 }
+
+.forgot-password button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
