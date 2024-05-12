@@ -1,0 +1,14 @@
+USE [OfficeMeetingRoomsBooking]
+GO
+
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES 
+               WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'ProfileImages')
+BEGIN
+	CREATE TABLE dbo.ProfileImages (
+		ProfileImageID int IDENTITY(1,1) PRIMARY KEY,
+		UserID nvarchar(450),
+		ProfileImageFileName nvarchar(max)
+		CONSTRAINT FK_ProfileImages_AspNetUsers_UserID FOREIGN KEY (UserID) REFERENCES dbo.AspNetUsers(Id)
+	)
+END
+GO
